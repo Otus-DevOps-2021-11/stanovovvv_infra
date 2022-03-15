@@ -1,3 +1,24 @@
+HW4 Deploying Test app
+testapp_IP = 178.154.240.52
+testapp_port = 9292
+###
+В YC с помощью консольной утилиты yc развернута машина reddit-app.
+Для установки Ruby и MongoDB используются скрипты install_ruby.sh и install_mongodb.sh, они должны запускаться с правами суперпользователя, например с помощью sudo.
+После установки Ruby и MongoDB выполняется деплой приложения скриптом deploy.sh.
+
+Для автоматического развертывания и деплоя создан файл метадаты metadata.yaml, который передается в качестве параметра в строку CLI:
+yc compute instance create \
+--name reddit-app \
+--hostname reddit-app \
+--platform standard-v3 \
+--cores 2 \
+--core-fraction 20 \
+--memory=2 \
+--create-boot-disk image-folder-id=standard-images,image-family=ubuntu-1604-lts,size=5GB \
+--network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 \
+--metadata-from-file user-data=metadata.yaml
+
+###
 bastion_IP = 130.193.49.156
 someinternalhost_IP = 10.128.0.8
 someinternalhost_Hostname = internal-lan

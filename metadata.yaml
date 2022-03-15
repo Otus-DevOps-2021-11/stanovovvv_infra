@@ -1,0 +1,31 @@
+#cloud-config
+disable_root: true
+timezone: Europe/Moscow
+repo_update: true
+
+users:
+    - default
+    - name: vasvs
+      sudo: ALL=(ALL) NOPASSWD:ALL
+      shell: /bin/bash
+      ssh-authorized-keys:
+        - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDc77sIlF3XiYpeUraB7T3OSVi7JB7/ypqVNsVRe18qsUihMu5lvjlztyME8nFTr1/4z3ZMVtrBWwqD3ZEgL0Rxp50AqblCgCEKc7+UDjJjhdOtPN1W7zffUAwihyG69Y4m9LqMFaRcPmhpJpfommk49JHbZ0V8es3G3sv5Ck5w2v/JjUVT70oxN22NfUv0fP+RXODZrJU2v8Mzu7UmKdw33neg0rppA57ZZ7jWaRqlP5gz6p1Ag019c8CHkKvixBHjUyrgBbsvEjAzVrLpGNEU8ju1zPHgpxeki7jlhJbKCbYKTrOMfh51JvYLk3tERijIpHfkhVdQl9LsI6kkBPmuvn86KnIKP05y9+CXhvXUFVeb/wPGXFo3vkqlvC+U/HqtSlbcVRQt+xnfCJixjZgWaqRwNQ+R+eilmDzfOWaV3V2jv4JZEktWTUuxbZ8ZrbWqXC1M2Ods93V1WlIJeYS2ey2RDM0IiIpAFG2Xmg16jpB5NrHv69MXF8KnxClIV9k= vasvs@vasvs"
+
+packages:
+  - git
+  - ruby-full
+  - ruby-bundler
+  - build-essential
+
+runcmd:
+  - wget -qO - https://www.mongodb.org/static/pgp/server-4.2.asc | apt-key add -
+  - echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.2.list
+  - apt-get update
+  - apt-get install -y mongodb-org
+  - systemctl start mongod
+  - systemctl enable mongod
+  - cd /home/vasvs
+  - git clone -b monolith https://github.com/express42/reddit.git
+  - cd reddit
+  - bundle install
+  - puma -d
